@@ -13,7 +13,7 @@ app.use(cors());
 mongoose.connect(process.env.MONGO_URL);
 
 // ✅ API: Search student by name + roll number
-app.post("/api/students/search", async (req, res) => {
+app.post("/search", async (req, res) => {
   const { name, studentClass, rollNumber } = req.body;
 
   try {
