@@ -2,13 +2,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const Student = require("./models/student");
+require("dotenv").config();
+
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 // ✅ Connect MongoDB
-mongoose.connect("mongodb+srv://sayanpub2020:8945097611@student-marksheet.t7zdeqq.mongodb.net/?retryWrites=true&w=majority&appName=student-marksheet");
+mongoose.connect(process.env.MONGO_URL);
 
 // ✅ API: Search student by name + roll number
 app.post("/api/students/search", async (req, res) => {
@@ -49,4 +51,4 @@ app.post("/add", async (req, res) => {
 });
 
 
-app.listen(5000, () => console.log("🚀 Server running on http://localhost:5000"));
+app.listen(process.env.PORT, () => console.log("🚀 Server running on http://localhost:5000"));
