@@ -12,6 +12,10 @@ app.use(cors());
 // ✅ Connect MongoDB
 mongoose.connect(process.env.MONGO_URL);
 
+app.get("/", (req,res) => {
+  res.send("Backend running successfully");
+})
+
 // ✅ API: Search student by name + roll number
 app.post("/search", async (req, res) => {
   const { name, studentClass, rollNumber } = req.body;
@@ -26,7 +30,6 @@ app.post("/search", async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-
     res.json(student);
   } catch (err) {
     res.status(500).json({ message: err.message });
