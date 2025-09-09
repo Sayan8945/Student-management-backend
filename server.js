@@ -15,10 +15,13 @@ mongoose.connect(process.env.MONGO_URL);
 app.get("/", (req,res) => {
   res.send("Backend running successfully");
 })
+app.get("/admin", (req,res) => {
+  res.send("Backend running successfully");
+})
 
 // ✅ API: Search student by name + roll number
-app.post("/api/search", async (req, res) => {
-  const { name, studentClass, rollNumber } = req.body;
+app.post("/search", async (req, res) => {
+  const { name, className, rollNumber } = req.body;
 
   try {
     const student = await Student.findOne({
@@ -36,7 +39,7 @@ app.post("/api/search", async (req, res) => {
   }
 });
 
-app.post("/api/add", async (req, res) => {
+app.post("/add", async (req, res) => {
   try {
     const { rollNumber, name, className, marks } = req.body;
 
