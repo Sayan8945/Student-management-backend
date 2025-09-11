@@ -1,60 +1,52 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const Student = require("./models/student");
-require("dotenv").config();
+const bodyParser = require("body-parser");
+const session = require("express-session");
+const passport = require("passport");
+require("./config/passport")(passport);
+require('dotenv').config();
 
+
+const authRoutes = require("./routes/auth");
 
 const app = express();
-app.use(express.json());
-app.use(cors());
 
-// ✅ Connect MongoDB
-mongoose.connect(process.env.MONGO_URL);
+// Middleware
+app.use(cors({
+  origin: "https://student-management-frontend-taupe.vercel.app", // your React app URL
+  credentials: true
+}));
+app.use(bodyParser.json());
 
-app.get("/", (req,res) => {
-  res.send("Backend running successfully");
-})
-app.get("/admin", (req,res) => {
-  res.send("Backend running successfully");
-})
+// Session setup
+app.use(
+  session({
+    secret: "supersecretkey", // change in production
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true } // set true if using https
+  })
+);
 
-// ✅ API: Search student by name + roll number
-app.post("/search", async (req, res) => {
-  const { name, className, rollNumber } = req.body;
+// Passport init
+app.use(passport.initialize());
+app.use(passport.session());
 
-  try {
-    const student = await Student.findOne({
-      name,
-      className,
-      rollNumber,
-    });
-
-    if (!student) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-    res.json(student);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// Routes
+app.use("/", authRoutes);
+app.get("/debug", (req, res) => {
+  res.json({ session: req.session, user: req.user });
 });
 
-app.post("/add", async (req, res) => {
-  try {
-    const { rollNumber, name, className, marks } = req.body;
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URL, {
+})
+.then(() => console.log("✅ MongoDB connected"))
+.catch((err) => console.error("❌ MongoDB connection error:", err));
 
-    if (!rollNumber || !name || !className) {
-      return res.status(400).json({ message: "Name, Roll Number, and Class are required!" });
-    }
-
-    const student = new Student({ rollNumber, name, className, marks });
-    await student.save();
-
-    res.json({ message: "Student added successfully!", student });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// Start server
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
-
-
-app.listen(process.env.PORT, () => console.log("🚀 Server running on http://localhost:5000"));
