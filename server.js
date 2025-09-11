@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const passport = require("passport");
 require("./config/passport")(passport);
-require('dotenv').config();
+require("dotenv").config();
 
 
 const authRoutes = require("./routes/auth");
@@ -25,7 +25,7 @@ app.use(
     secret: "supersecretkey", // change in production
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: true } // set true if using https
+    cookie: { secure: false } // set true if using https
   })
 );
 
