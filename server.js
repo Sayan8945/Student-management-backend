@@ -51,7 +51,6 @@ app.use(
   })
 );
 
-app.use(session(sessionOptions));
 
 
 // Passport init
