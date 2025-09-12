@@ -16,33 +16,38 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  // origin: "https://student-management-frontend-taupe.vercel.app", // your React app URL
-  origin: "http://localhost:5173",
+  origin: "https://student-management-frontend-taupe.vercel.app",
   credentials: true
 }));
 app.use(bodyParser.json());
 
 const store = MongoStore.create({
-    mongoUrl: process.env.MONGO_URL,
-    crypto : {
-      secret : process.env.SECRET,
-    },
-    touchAfter: 24 * 3600,
-  })
-store.on("error", () => {
-  console.log("Error in mongo session store",err);
-})
-const sessionOptions = {
-    store,
-    secret: process.env.SECRET, // change in production
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false } // set true if using https
-  }
+  mongoUrl: process.env.MONGO_URL,
+  crypto: {
+    secret: process.env.SECRET,
+  },
+  touchAfter: 24 * 3600, // reduce session writes
+});
 
-  
-// Session setup
+store.on("error", (err) => {
+  console.error("❌ Error in mongo session store", err);
+});
+
+const sessionOptions = {
+  store,
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,                                // cookie not accessible via JS
+    secure: process.env.NODE_ENV === "production", // true on Vercel, false locally
+    sameSite: "none",                              // ✅ required for cross-domain
+    maxAge: 1000 * 60 * 60 * 24,                   // 1 day
+  },
+};
+
 app.use(session(sessionOptions));
+
 
 // Passport init
 app.use(passport.initialize());
