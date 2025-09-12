@@ -15,8 +15,8 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  // origin: "https://student-management-frontend-taupe.vercel.app", // your React app URL
-  origin: "http://localhost:5173",
+  origin: "https://student-management-frontend-taupe.vercel.app", // your React app URL
+  // origin: "http://localhost:5173",
   credentials: true
 }));
 app.use(bodyParser.json());
