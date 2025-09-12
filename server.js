@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
+const marksheetRoutes = require("./routes/marksheet");
 require("./config/passport")(passport);
 require("dotenv").config();
 
@@ -52,6 +53,8 @@ app.use("/", authRoutes);
 app.get("/debug", (req, res) => {
   res.json({ session: req.session, user: req.user });
 });
+app.use("/uploads", express.static("uploads"));
+app.use("/", marksheetRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URL)
