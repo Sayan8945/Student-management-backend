@@ -79,6 +79,7 @@ router.get("/get-marksheet", async (req, res) => {
       resource_type: "raw",
       type: "authenticated",
       sign_url: true,
+      secure: true,
       expires_at: Math.floor(Date.now() / 1000) + 3600, // 1h expiry
     });
 
