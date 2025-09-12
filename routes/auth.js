@@ -10,8 +10,10 @@ const router = express.Router();
 router.post("/signup", async (req, res) => {
   try {
     const { role, name, year, dept, roll, dob, gmail, teacherId } = req.body;
+   
     if (role === "student") {
       const student = new Student({ name, year, dept, roll, dob });
+       console.log(student);
       await student.save();
       return res.json({ message: "✅ Student registered successfully" });
     } else if (role === "teacher") {
@@ -23,7 +25,7 @@ router.post("/signup", async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "❌ Server error" });
+    res.status(500).json({ error: err.errmsg });
   }
 });
 

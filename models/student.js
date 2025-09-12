@@ -6,7 +6,7 @@ const studentSchema = new mongoose.Schema({
   dept: { type: String, required: true },
   roll: { type: String, required: true },
   dob: { type: Date, required: true },
-  marksheet: { type: String } // ✅ path to uploaded file
+  marksheet: { type: String, default: null } // ✅ path to uploaded file
 });
 
 // Unique: roll + dept + year
