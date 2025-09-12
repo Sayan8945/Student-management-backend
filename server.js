@@ -21,30 +21,35 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
+// ✅ Session
 const store = MongoStore.create({
   mongoUrl: process.env.MONGO_URL,
   crypto: {
     secret: process.env.SECRET,
   },
-  touchAfter: 24 * 3600, // reduce session writes
+  touchAfter: 24 * 3600,
 });
 
 store.on("error", (err) => {
-  console.error("❌ Error in mongo session store", err);
+  console.error("❌ Session store error", err);
 });
 
-const sessionOptions = {
-  store,
-  secret: process.env.SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,                                // cookie not accessible via JS
-    secure: process.env.NODE_ENV === "production", // true on Vercel, false locally
-    sameSite: "none",                              // ✅ required for cross-domain
-    maxAge: 1000 * 60 * 60 * 24,                   // 1 day
-  },
-};
+app.set("trust proxy", 1); // ✅ important for Vercel/Heroku
+
+app.use(
+  session({
+    store,
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: true, // ✅ true on Vercel
+      sameSite: "none",                              // ✅ required for cross-site
+      maxAge: 1000 * 60 * 60 * 24,                   // 1 day
+    },
+  })
+);
 
 app.use(session(sessionOptions));
 
