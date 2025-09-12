@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const passport = require("passport");
 require("./config/passport")(passport);
 require("dotenv").config();
@@ -20,15 +21,27 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
-// Session setup
-app.use(
-  session({
-    secret: "supersecretkey", // change in production
+const store = MongoStore.create({
+    mongoUrl: process.env.MONGO_URL,
+    crypto : {
+      secret : process.env.SECRET,
+    },
+    touchAfter: 24 * 3600,
+  })
+store.on("error", () => {
+  console.log("Error in mongo session store",err);
+})
+const sessionOptions = {
+    store,
+    secret: process.env.SECRET, // change in production
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false } // set true if using https
-  })
-);
+  }
+
+  
+// Session setup
+app.use(session(sessionOptions));
 
 // Passport init
 app.use(passport.initialize());
