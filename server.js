@@ -14,7 +14,8 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "https://student-management-frontend-taupe.vercel.app", // your React app URL
+  // origin: "https://student-management-frontend-taupe.vercel.app", // your React app URL
+  origin: "http://localhost:5173/login",
   credentials: true
 }));
 app.use(bodyParser.json());
@@ -40,8 +41,7 @@ app.get("/debug", (req, res) => {
 });
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URL, {
-})
+mongoose.connect(process.env.MONGO_URL)
 .then(() => console.log("✅ MongoDB connected"))
 .catch((err) => console.error("❌ MongoDB connection error:", err));
 
